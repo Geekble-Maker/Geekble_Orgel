@@ -1,17 +1,17 @@
 /*
-    Geekble_MotorOrgel - Library for MotorOrgel.
-    Created by SooDragon @ Geekble Circuit Maker, Dec 8, 2024.
+    Geekble_Orgel - Library for Orgel.
+    Created by SooDragon @ Geekble Circuit Maker, Feb 27, 2025.
 */
 #include "Arduino.h"
 
 
-#ifndef Geekble_MotorOrgel_h
-    #define Geekble_MotorOrgel_h
+#ifndef Geekble_Orgel_h
+    #define Geekble_Orgel_h
     
-    class Geekble_MotorOrgel
+    class Geekble_Orgel
     {
         public:
-        Geekble_MotorOrgel();    // Construct Class, Initialize function.
+        Geekble_Orgel();    // Construct Class, Initialize function.
         unsigned long NoteLength(float _duration);
         void Set_BPM_QuarterNote(uint16_t _BPM);
         private:
