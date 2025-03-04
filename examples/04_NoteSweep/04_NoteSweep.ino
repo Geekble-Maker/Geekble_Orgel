@@ -1,21 +1,61 @@
-#include <Geekble_Orgel.h>
+/*
+  🎵 [스위치를 눌러 계단식 음 출력하기] 🎵
 
+  📌 [프로그램 설명]
+  - 버튼을 누르면 2옥타브~8옥타브의 모든 음을 차례대로 연주합니다.
+  - 원하는 음표 길이를 선택할 수 있으며, `BPM_QuarterNote` 설정으로 연주 속도를 조절할 수 있습니다.
+  - 버튼을 계속 누르고 있는 동안 계단식 음 출력이 진행되며, 버튼을 떼면 종료됩니다.
+
+  📌 [사용 환경]
+  - 아두이노 보드 또는 ESP32 등의 개발 보드
+  - Geekble_Orgel 라이브러리를 사용하여 음을 출력 가능
+  - **주의**: `tone()` 함수는 일부 보드에서 LED_BUILTIN 핀을 사용할 경우 예상과 다른 동작을 할 수 있음.
+
+  ✅ [사용 방법]
+  1. 버튼을 누르면 2옥타브~8옥타브까지 모든 음이 차례로 재생됩니다.
+  2. 버튼을 누르고 있는 동안 계속 연주되며, 떼면 정지됩니다.
+  3. 음표 길이를 조정하려면 `NoteSweep()`에서 원하는 길이를 선택하세요.
+*/
+
+#include <Geekble_Orgel.h>  // Geekble_Orgel 라이브러리 포함
+
+// 🎵 Geekble_Orgel 객체 생성
 Geekble_Orgel Sing;
 
-#define tonePin LED_BUILTIN     // LED Built-In 핀
-#define switchPin SW_BUILTIN    // SW Built-In 핀
+// ==============================
+// 🔧 핀 설정
+// ==============================
+#define tonePin LED_BUILTIN  // 사운드를 출력할 핀 (Built-In LED 핀 사용)
+#define switchPin SW_BUILTIN // 내장 스위치 핀
+
+// ==============================
+// 🔧 스위치 상태 정의
+// ==============================
+#define sw_Pressed  LOW   // 스위치가 눌린 상태를 LOW로 정의 (내장 풀업 저항 사용)
+#define sw_Released HIGH  // 스위치를 뗀 상태를 HIGH로 정의 (내장 풀업 저항 사용)
+
+// ==============================
+// 🔧 초기 설정 (setup) 함수
+// ==============================
 void setup() 
 {
-  Serial.begin(115200);
-  pinMode(tonePin, OUTPUT);
-  pinMode(switchPin, INPUT_PULLUP);
-  Sing.Set_BPM_QuarterNote(480);
+  Serial.begin(115200);   // 시리얼 통신 시작 (115200 baud)
+  pinMode(tonePin, OUTPUT);  // 출력 핀 설정 (사운드 출력)
+  pinMode(switchPin, INPUT_PULLUP);  // 스위치 핀을 풀업 입력으로 설정
+
+  Sing.Set_BPM_QuarterNote(480);  // 기본 BPM 설정 (연주 속도 조절)
+
+  Serial.print("🎵 Ready! Press the button to start the sweep.\n");
 }
 
+// ==============================
+// 🔄 메인 루프 (loop) 함수
+// ==============================
 void loop() 
 {
-  if(digitalRead(switchPin) == false) {
-    Serial.println("Switch Pressed, Start Sweep");
+  if (digitalRead(switchPin) == sw_Pressed)  
+  {  
+    Serial.print("🎶 Button Pressed: Starting Note Sweep\n");
 
     //NoteSweep(_dotteddoubleWhole);  // 온점이중온음표 (가장 느림)
     //NoteSweep(_doubleWhole);        // 이중온음표
@@ -33,14 +73,19 @@ void loop()
     //NoteSweep(_thirtysecond);       // 32분음표
     //NoteSweep(_dottedsixtyfourth);  // 온점64분음표
     //NoteSweep(_sixtyfourth);        // 64분음표 (가장 빠름)
-    
-    noTone(tonePin);
 
-    Serial.println("Sweep Finished");
+    Serial.print("⏹️ Sweep Finished\n");
   }
 }
 
-
+// ==============================
+// 🎵 계단식 음 출력 (NoteSweep) 함수
+// ==============================
+/*
+  📌 [NoteSweep() 함수 설명]
+  - 2옥타브~8옥타브까지 모든 음을 순차적으로 재생하는 함수입니다.
+  - `_noteLength` 값을 조정하여 음표 길이를 변경할 수 있습니다.
+*/
 void NoteSweep (float _noteLength) {
 
   tone(tonePin, n_C2 );     delay(Sing.NoteLength(_noteLength));           //도(2옥타브)     
@@ -168,4 +213,7 @@ void NoteSweep (float _noteLength) {
   tone(tonePin, n_As8);     delay(Sing.NoteLength(_noteLength));           //라샾(8옥타브)   
   tone(tonePin, n_Bb8);     delay(Sing.NoteLength(_noteLength));           //시플렛(8옥타브) 
   tone(tonePin, n_B8 );     delay(Sing.NoteLength(_noteLength));           //시(8옥타브)     
+  
+  // 🔇 모든 음이 끝나면 소리 중단
+  noTone(tonePin);
 } 
